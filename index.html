@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotspot Guest Authentication</title>
+
+    <!-- Inline CSS Styles -->
+<style>
+
+/* General styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('background.jpg'); /* Set your background image */
+    background-size: cover; /* Make background image cover the entire screen */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Prevent the background image from repeating */
+    background-attachment: fixed; /* Make the background image fixed */
+}
+
+/* Centering the login card */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Styling the login card */
+.login-card {
+    background: rgba(255, 255, 255, 0.8); /* White background with transparency */
+    width: 350px;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgb(255, 254, 254);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Add a small bounce effect on hover */
+.login-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Styling the logo (if applicable) */
+.logo-container {
+    margin-bottom: 20px;
+}
+
+.logo {
+    max-width: 300px;
+    height: auto;
+}
+
+/* Form styling */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Input field styling */
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+/* Focus state for input fields */
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: #4facfe;
+    outline: none;
+}
+
+/* Submit button styling */
+input[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    background-color: #4facfe;
+    border: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+/* Submit button hover effect */
+input[type="submit"]:hover {
+    background-color: #00c6ff;
+}
+
+/* Styling for message container */
+.message {
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Success message styling */
+.message-success {
+    color: green;
+}
+
+/* Failure message styling */
+.message-failure {
+    color: red;
+}
+
+/* Styling for the forgot password link */
+.forgot-password {
+    margin-top: 15px;
+}
+
+.forgot-password a {
+    color: #4facfe; /* Match the theme color */
+    text-decoration: none;
+    font-size: 14px; /* Adjust font size */
+}
+
+.forgot-password a:hover {
+    text-decoration: underline; /* Underline text on hover */
+}
+
+/* Styling for the assistance information */
+.assistance-info {
+    margin-top: 30px;
+    font-size: 14px;
+    color: #666; /* Grey color for assistance text */
+}
+
+.assistance-info p {
+    margin: 5px 0; /* Add some spacing between paragraphs */
+}
+
+/* Styling for assistance links */
+.assistance-info a {
+    color: #4facfe; /* Match the theme color */
+    text-decoration: none;
+}
+
+.assistance-info a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .login-card {
+        width: 90%;
+    }
+    h2 {
+        font-size: 20px;
+    }
+    .logo {
+        max-width: 150px;
+    }
+    input[type="text"], input[type="password"], input[type="submit"] {
+        font-size: 14px;
+    }
+    .message {
+        font-size: 14px;
+    }
+}
+
+</style>
+          
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo" class="logo">
+            </div>
+            <h2>Kindly Enter Your Registered Mobile Number to Login</h2>
+            <form id="loginForm" action="" method="post">
+                <fieldset>
+                    <!-- Hidden fields for authentication process -->
+                    <input type="hidden" name="action" value="hotspot_auth">
+                    <input type="hidden" name="ts" id="timestamp" value="">
+                    <input type="hidden" name="sn" id="serialNumber" value="">
+                    <input type="hidden" name="mac" id="macAddress" value="">
+                    <input type="hidden" name="success" value="1">
+                    <input type="hidden" name="sig" id="signature" value="">
+                    <input type="hidden" name="redirect" id="redirectUrl" value="">
+
+                    <!-- User input fields -->
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+
+                    <!-- Submit button -->
+                    <input type="submit" value="Login">
+                </fieldset>
+            </form>
+
+            <div class="forgot-password">
+                <a href="http://103.255.234.130/customer_portal/" target="_blank">Forgot Password?</a>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <div class="assistance-info">
+                <p>For Any Assistance</p>
+                <p>Email ID: <a href="mailto:srmwificomplaints@gmail.com">srmwificomplaints@gmail.com</a></p>
+                <p>Copyright by <a href="https://www.srmup.in" target="_blank">srmup.in</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Retrieve query parameters from the URL (access request URL from Firebox)
+            const urlParams = new URLSearchParams(window.location.search);
+            const xtm = urlParams.get('xtm'); // Firebox decision URL
+            const ts = urlParams.get('ts');   // Timestamp
+            const sn = urlParams.get('sn');   // Serial number
+            const mac = urlParams.get('mac'); // MAC address
+            const redirect = urlParams.get('redirect'); // Original URL the user tried to access
+
+            // Populate hidden fields with query parameter values
+            document.getElementById('timestamp').value = ts;
+            document.getElementById('serialNumber').value = sn;
+            document.getElementById('macAddress').value = mac;
+            document.getElementById('redirectUrl').value = redirect;
+        });
+
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+
+            // Get values from the form and hidden fields
+            const ts = document.getElementById('timestamp').value;
+            const sn = document.getElementById('serialNumber').value;
+            const mac = document.getElementById('macAddress').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const redirect = document.getElementById('redirectUrl').value;
+
+            // Get the XTM (Firebox decision) URL from the query parameters
+            const xtm = new URLSearchParams(window.location.search).get('xtm');
+
+            // Generate the signature based on the provided formula
+            const signature = generateSignature(ts, sn, mac);
+
+            // Construct the access decision URL for the Firebox
+            const decisionUrl = `${xtm}?action=hotspot_auth&ts=${ts}&success=1&sig=${signature}&redirect=${encodeURIComponent(redirect)}`;
+
+            // Redirect the user to the Firebox decision URL (XTM) after authentication
+            window.location.href = decisionUrl;
+        };
+
+        function generateSignature(ts, sn, mac) {
+            const sharedSecret = 'your_shared_secret';  // Replace with your actual shared secret
+            const dataToHash = ts + sn + mac + '1' + '1200' + '600' + sharedSecret;
+
+            // Use SHA1 hashing to generate the signature
+            return sha1(dataToHash);
+        }
+
+        // SHA1 hash function (CryptoJS)
+        function sha1(data) {
+            return CryptoJS.SHA1(data).toString();
+        }
+    </script>
+
+    <!-- Include the CryptoJS library for SHA1 hashing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+</body>
+</html>
+

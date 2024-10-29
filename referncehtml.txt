@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captive Portal Login</title>
+    <!-- Link to the external CSS file -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-container">
+                <!-- Placeholder for logo image, if needed -->
+                <img src="logo.png" alt="Logo" class="logo">
+            </div>
+            <h2>Kindly Enter Your Registered Mobile Number to Login</h2>
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <input type="submit" value="Login">
+            </form>
+            
+            <!-- Forgot Password Link -->
+            <div class="forgot-password">
+                <a href="http://103.255.234.130/customer_portal/" target="_blank">Forgot Password?</a>
+            </div>
+
+            <!-- Message Container -->
+            <div id="message" class="message"></div>
+            
+            <!-- Assistance Information -->
+            <div class="assistance-info">
+                <p>For Any Assistance</p>
+                <p>Email ID: <a href="mailto:srmwificomplaints@gmail.com">srmwificomplaints@gmail.com</a></p>
+                <p>Copyright by <a href="https://www.srmup.in" target="_blank">srmup.in</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+
+            // Retrieve query parameters from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const loginUrl = urlParams.get('login_url');
+            const apMac = urlParams.get('ap_mac');
+            const clientMac = urlParams.get('client_mac');
+            const origUrl = urlParams.get('orig_url');
+            const ssid = urlParams.get('ssid');
+
+            // Get username and password from the form
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Construct the redirect URL
+            const redirectUrl = `${loginUrl}?username=${username}&password=${password}&ap_mac=${apMac}&client_mac=${clientMac}&orig_url=${origUrl}&ssid=${ssid}`;
+
+            // Redirect the user to the login URL with the parameters
+            window.location.href = redirectUrl;
+        };
+    </script>
+</body>
+</html>
